@@ -341,6 +341,7 @@
     flex-wrap: wrap;
     gap: 14px;
     padding-top: 24px;
+    padding-right: 96px; /* keep clear of the fixed sound control */
     border-top: 1px solid rgba(255, 255, 255, 0.07);
     font-size: 13px;
     color: rgba(245, 243, 255, 0.45);
@@ -486,7 +487,8 @@
   @media (max-width: 560px) {
     form { flex-direction: column; padding: 10px; }
     form input { padding: 12px 14px; }
-    footer { justify-content: center; text-align: center; }
+    /* center the text above the sound control instead of beside it */
+    footer { justify-content: center; text-align: center; padding-right: 0; padding-bottom: 72px; }
     .hide-sm { display: none; }
   }
 
@@ -761,7 +763,7 @@
          See google-apps-script.gs + README for the 4-step deploy.
          While this is empty, signups are just kept in localStorage.
          ──────────────────────────────────────────────────────────────── */
-      var WAITLIST_ENDPOINT = '';
+      var WAITLIST_ENDPOINT = 'https://script.google.com/macros/s/AKfycbynPJo6Df4avIQWH9dwgH-6t3l9SbBko0I6znnngM_0uFA_5A6lf_BXTGJzz2YhZpDekA/exec';
 
       var form = document.getElementById('waitlist');
       var success = document.getElementById('success');
