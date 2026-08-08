@@ -8,12 +8,29 @@
 
 <!-- Open Graph / social -->
 <meta property="og:title" content="Melody AI — The smarter music growth engine" />
-<meta property="og:description" content="Data into action. Grow your fanbase, engage your audience, and grow your revenue — on autopilot. Coming soon." />
+<meta property="og:description" content="You make the music. Melody helps you promote it. The AI growth engine for artists, labels, and managers — coming soon." />
 <meta property="og:type" content="website" />
 <meta property="og:image" content="assets/melody-poster.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Melody AI — The smarter music growth engine" />
+<meta name="twitter:description" content="You make the music. Melody helps you promote it. Coming soon." />
+<meta name="twitter:image" content="assets/melody-poster.jpg" />
 <meta name="theme-color" content="#0b0b12" />
+<link rel="preload" as="image" href="assets/melody-poster.jpg" />
 
-<link rel="icon" type="image/png" href="assets/melody-avatar.png" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Melody AI",
+  "description": "The AI growth engine for artists, labels, and managers. Coming soon.",
+  "url": "https://miketanzer.github.io/MelodyAi/"
+}
+</script>
+
+<link rel="icon" type="image/png" sizes="512x512" href="assets/melody-avatar.png" />
+<link rel="apple-touch-icon" href="assets/melody-avatar.png" />
+<link rel="shortcut icon" type="image/png" href="assets/melody-avatar.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -342,6 +359,120 @@
   .socials a:hover { color: #fff; border-color: rgba(217, 70, 239, 0.5); background: rgba(217, 70, 239, 0.12); transform: translateY(-2px); }
   .socials svg { width: 17px; height: 17px; }
 
+  /* ---------- word rotator ----------
+     Owns its own gradient clip (a filter/blur on a child of a
+     background-clip:text parent breaks text rendering in WebKit). */
+  .rotator {
+    display: inline-block;
+    background: var(--grad);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shine 6s linear infinite;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .rotator.swap { opacity: 0; transform: translateY(0.28em); }
+
+  /* ---------- sound control ----------
+     One bordered capsule: the volume fader expands vertically OUT OF the
+     speaker pill on hover, and collapses ~1s after the mouse leaves. */
+  .sound-ctrl {
+    position: fixed;
+    right: clamp(16px, 4vw, 32px);
+    bottom: clamp(16px, 4vw, 32px);
+    z-index: 20;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: stretch;
+    border-radius: 24px;
+    border: 1px solid var(--line);
+    background: rgba(20, 16, 32, 0.55);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+    transition: border-color 0.25s, box-shadow 0.25s;
+    animation: fadeUp 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.9s both;
+  }
+  .sound-ctrl:hover, .sound-ctrl:focus-within {
+    border-color: rgba(217, 70, 239, 0.5);
+    box-shadow: 0 12px 34px rgba(217, 70, 239, 0.28);
+  }
+  .sound-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    height: 46px;
+    padding: 0 15px;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  /* vertical fader — expands out of the pill; collapses with a delay */
+  .vol-popover {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 0;
+    opacity: 0;
+    pointer-events: none;
+    /* collapse: waits 0.75s after the mouse leaves, done by ~1s */
+    transition: height 0.25s ease 0.75s, opacity 0.2s ease 0.75s;
+  }
+  .sound-ctrl:hover .vol-popover,
+  .sound-ctrl:focus-within .vol-popover {
+    height: 118px;
+    opacity: 1;
+    pointer-events: auto;
+    transition: height 0.25s ease, opacity 0.25s ease 0.05s; /* expand instantly */
+  }
+  .vol-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 92px;                     /* becomes the vertical length */
+    height: 5px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+    outline: none;
+    cursor: pointer;
+    transform: rotate(-90deg);       /* vertical, custom styling everywhere */
+    flex-shrink: 0;
+  }
+  .vol-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px; height: 15px;
+    border-radius: 50%;
+    background: #f0abfc;
+    box-shadow: 0 0 0 4px rgba(217, 70, 239, 0.22);
+    cursor: pointer;
+  }
+  .vol-slider::-moz-range-thumb {
+    width: 15px; height: 15px; border: none;
+    border-radius: 50%;
+    background: #f0abfc;
+    box-shadow: 0 0 0 4px rgba(217, 70, 239, 0.22);
+    cursor: pointer;
+  }
+  .sound-toggle svg { width: 19px; height: 19px; }
+  .sound-toggle .ico-on { display: none; color: #f0abfc; }
+  .sound-toggle.playing .ico-on { display: block; }
+  .sound-toggle.playing .ico-muted { display: none; }
+
+  /* animated bars — only when playing */
+  .eqbars { display: none; align-items: flex-end; gap: 2.5px; height: 16px; }
+  .sound-toggle.playing .eqbars { display: inline-flex; }
+  .eqbars i {
+    width: 2.5px; height: 6px; border-radius: 2px; background: var(--grad);
+    animation: sbar 0.9s ease-in-out infinite;
+  }
+  .eqbars i:nth-child(2) { animation-delay: -0.5s; }
+  .eqbars i:nth-child(3) { animation-delay: -0.25s; }
+  @keyframes sbar { 0%, 100% { height: 5px; } 50% { height: 15px; } }
+
   /* entrance animation */
   .fade { opacity: 0; transform: translateY(18px); animation: fadeUp 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) forwards; }
   .d1 { animation-delay: 0.05s; }
@@ -359,8 +490,23 @@
     .hide-sm { display: none; }
   }
 
+  /* keyboard focus */
+  :focus-visible {
+    outline: 2px solid #f0abfc;
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+  form input:focus-visible, .vol-slider:focus-visible { outline: none; }
+
+  .noscript-note {
+    position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%);
+    z-index: 30; padding: 10px 18px; border-radius: 999px;
+    background: rgba(20,16,32,0.85); border: 1px solid var(--line);
+    font-size: 13px; color: var(--muted);
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .fade, .eq span, .eyebrow .spark, h1 .grad, .dot { animation: none !important; opacity: 1 !important; transform: none !important; }
+    .fade, .eq span, .eyebrow .spark, h1 .grad, .dot, .eqbars i { animation: none !important; opacity: 1 !important; transform: none !important; }
     .bg-video { display: none; }
   }
 </style>
@@ -377,6 +523,21 @@
   <div class="bg-overlay" aria-hidden="true"></div>
   <div class="bg-grain" aria-hidden="true"></div>
 
+  <!-- background music -->
+  <audio id="theme" src="assets/melody-theme.mp3" loop preload="auto"></audio>
+  <div class="sound-ctrl" id="soundCtrl">
+    <div class="vol-popover">
+      <input type="range" id="vol" class="vol-slider" min="0" max="100" value="35" aria-label="Music volume" />
+    </div>
+    <button id="soundToggle" class="sound-toggle" type="button" aria-label="Toggle background music" aria-pressed="false" title="Play music">
+      <svg class="ico-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+      <svg class="ico-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+      <span class="eqbars" aria-hidden="true"><i></i><i></i><i></i></span>
+    </button>
+  </div>
+
+  <noscript><div class="noscript-note">Enable JavaScript to join the waitlist — or email <a href="mailto:hello@melody.ai" style="color:#f0abfc">hello@melody.ai</a>.</div></noscript>
+
   <div class="wrap">
     <!-- top bar -->
     <header class="fade d1">
@@ -392,21 +553,21 @@
       <div class="hero">
         <span class="eyebrow fade d2"><span class="spark">✦</span> Coming Soon</span>
 
-        <h1 class="fade d2">The smarter way to<br /><span class="grad">grow your music.</span></h1>
+        <h1 class="fade d2">The smarter way to<br /><span class="grad">grow your <span class="rotator" id="rotator">music</span>.</span></h1>
 
         <div class="eq fade d3" aria-hidden="true">
           <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
         </div>
 
         <p class="sub fade d3">
-          Melody AI reads the signals behind every stream, follow, and sale — then makes the
-          right move for you. More fans, more reach, more revenue, without the guesswork.
-          <br class="hide-sm" /><strong>You make the music. Melody grows it.</strong>
+          Every stream, share, and sale is a signal. Melody hears them all —
+          and knows exactly what to do next.
+          <br class="hide-sm" /><strong>You make the music. Melody helps you promote it.</strong>
         </p>
 
         <!-- waitlist -->
         <form id="waitlist" class="fade d4" novalidate>
-          <input type="email" id="email" name="email" placeholder="you@artist.com" autocomplete="email" required aria-label="Email address" />
+          <input type="email" id="email" name="email" placeholder="you@artist.com" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" enterkeyhint="go" required aria-label="Email address" />
           <button type="submit">Get early access</button>
         </form>
         <p class="form-note fade d4">Join the waitlist — be first in line when the beta opens. No spam, ever.</p>
@@ -449,6 +610,123 @@
         requestAnimationFrame(step);
       }
       requestAnimationFrame(step);
+    })();
+
+    /* Background music: loops, fades in, and — because browsers block
+       autoplay with sound — starts on the first interaction if blocked.
+       The 🔊 button lets visitors mute/unmute at any time. */
+    (function () {
+      var audio = document.getElementById('theme');
+      var btn = document.getElementById('soundToggle');
+      if (!audio || !btn) return;
+
+      var slider = document.getElementById('vol');
+      var TARGET = (slider ? Number(slider.value) : 35) / 100; // gentle background level
+      var userMuted = false;
+      audio.volume = 0;
+
+      if (slider) {
+        slider.addEventListener('input', function () {
+          TARGET = Number(slider.value) / 100;
+          if (!audio.paused) { if (audio._fade) clearInterval(audio._fade); audio.volume = TARGET; }
+        });
+        slider.addEventListener('click', function (e) { e.stopPropagation(); });
+      }
+
+      function fadeTo(target, ms) {
+        if (audio._fade) clearInterval(audio._fade);
+        var steps = 24, i = 0, start = audio.volume;
+        audio._fade = setInterval(function () {
+          i++;
+          audio.volume = Math.max(0, Math.min(1, start + (target - start) * (i / steps)));
+          if (i >= steps) { clearInterval(audio._fade); if (target === 0) audio.pause(); }
+        }, ms / steps);
+      }
+
+      function setUI(playing) {
+        btn.classList.toggle('playing', playing);
+        btn.setAttribute('aria-pressed', playing ? 'true' : 'false');
+        btn.title = playing ? 'Mute music' : 'Play music';
+      }
+
+      function start() {
+        var p = audio.play();
+        if (p && p.then) {
+          p.then(function () { setUI(true); fadeTo(TARGET, 1400); })
+           .catch(function () { setUI(false); arm(); });
+        } else { setUI(true); fadeTo(TARGET, 1400); }
+      }
+
+      // If autoplay is blocked, begin on the visitor's first gesture.
+      function arm() {
+        var evs = ['pointerdown', 'keydown', 'touchstart'];
+        var once = function (e) {
+          if (userMuted) return;
+          if (e && e.target && btn.contains(e.target)) return; // the button manages itself
+          audio.volume = 0;
+          audio.play().then(function () { setUI(true); fadeTo(TARGET, 1400); }).catch(function () {});
+          evs.forEach(function (ev) { document.removeEventListener(ev, once); });
+        };
+        evs.forEach(function (ev) { document.addEventListener(ev, once); });
+      }
+
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (audio.paused) { userMuted = false; audio.volume = 0; start(); }
+        else { userMuted = true; setUI(false); fadeTo(0, 450); }
+      });
+
+      start(); // try immediately; falls back to a gesture if the browser blocks it
+    })();
+
+    /* Courtesy: pause the music when the tab is hidden, resume on return. */
+    (function () {
+      var audio = document.getElementById('theme');
+      if (!audio) return;
+      var wasPlaying = false;
+      document.addEventListener('visibilitychange', function () {
+        if (document.hidden) { wasPlaying = !audio.paused; if (wasPlaying) audio.pause(); }
+        else if (wasPlaying) { var p = audio.play(); if (p && p.catch) p.catch(function () {}); }
+      });
+    })();
+
+    /* Subtle mouse parallax on the background video (desktop, motion-ok only). */
+    (function () {
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var fine = window.matchMedia && window.matchMedia('(pointer: fine)').matches;
+      if (reduce || !fine) return;
+      var vids = [document.getElementById('v1'), document.getElementById('v2')].filter(Boolean);
+      vids.forEach(function (v) { v.style.scale = '1.06'; }); // headroom so edges never show
+      var tx = 0, ty = 0, cx = 0, cy = 0, raf = null;
+      function tick() {
+        cx += (tx - cx) * 0.06;
+        cy += (ty - cy) * 0.06;
+        vids.forEach(function (v) { v.style.translate = cx.toFixed(1) + 'px ' + cy.toFixed(1) + 'px'; });
+        raf = (Math.abs(tx - cx) > 0.1 || Math.abs(ty - cy) > 0.1) ? requestAnimationFrame(tick) : null;
+      }
+      document.addEventListener('mousemove', function (e) {
+        tx = (e.clientX / window.innerWidth - 0.5) * -18;
+        ty = (e.clientY / window.innerHeight - 0.5) * -12;
+        if (!raf) raf = requestAnimationFrame(tick);
+      }, { passive: true });
+    })();
+
+    /* Headline word rotator: music → fanbase → engagement → sales → … */
+    (function () {
+      var el = document.getElementById('rotator');
+      if (!el) return;
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce) return; // keep the static word for reduced-motion visitors
+      var WORDS = ['music', 'fanbase', 'engagement', 'sales'];
+      var i = 0;
+      window.setInterval(function () {
+        el.classList.add('swap');                    // fade out
+        window.setTimeout(function () {
+          i = (i + 1) % WORDS.length;
+          el.textContent = WORDS[i];
+          el.classList.remove('swap');               // fade back in
+        }, 320);
+      }, 3200);
     })();
 
     (function () {
