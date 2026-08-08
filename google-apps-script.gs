@@ -1,13 +1,18 @@
 /**
  * Melody AI waitlist → Google Sheet.
- * Paste this ENTIRE file into Extensions ▸ Apps Script (replace everything),
- * then: Deploy ▸ New deployment ▸ Web app · Execute as: Me · Access: Anyone.
+ *
+ * IMPORTANT: open this from INSIDE the target sheet (Extensions ▸ Apps Script)
+ * so the script is bound to that sheet. The @OnlyCurrentDoc tag below limits
+ * the permission to ONLY this spreadsheet — not your other Google Sheets.
+ *
+ * Deploy: Deploy ▸ New deployment ▸ Web app · Execute as: Me · Access: Anyone.
  * Copy the /exec URL into WAITLIST_ENDPOINT in index.html.
+ *
+ * @OnlyCurrentDoc
  */
-var SHEET_ID = '1taqOc4e8kF4dzx81rXIjFCOeqDtAFSmgzZeliXOlF_Q';
 
 function sheet_() {
-  var ss = SpreadsheetApp.openById(SHEET_ID);
+  var ss = SpreadsheetApp.getActiveSpreadsheet(); // the bound sheet only
   var sh = ss.getSheetByName('Waitlist') || ss.getSheets()[0];
   if (sh.getLastRow() === 0) sh.appendRow(['Timestamp', 'Email', 'Source', 'Page']);
   return sh;
