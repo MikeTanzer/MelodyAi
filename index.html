@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Melody AI — The smarter way to grow your music</title>
+<meta name="description" content="Melody AI turns your streaming, social, and sales data into the exact next move — then takes it for you. The AI growth engine for artists, labels, and managers. Coming soon." />
+
+<!-- Open Graph / social -->
+<meta property="og:title" content="Melody AI — The smarter music growth engine" />
+<meta property="og:description" content="Data into action. Grow your fanbase, engage your audience, and grow your revenue — on autopilot. Coming soon." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="assets/melody-poster.jpg" />
+<meta name="theme-color" content="#0b0b12" />
+
+<link rel="icon" type="image/png" href="assets/melody-avatar.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --violet: #8b5cf6;
+    --fuchsia: #ec4899;
+    --ink: #0b0b12;
+    --text: #f5f3ff;
+    --muted: rgba(245, 243, 255, 0.62);
+    --line: rgba(255, 255, 255, 0.12);
+    --grad: linear-gradient(105deg, #a78bfa 0%, #d946ef 55%, #f0abfc 100%);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--ink);
+    color: var(--text);
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+  }
+
+  /* ---------- background video ---------- */
+  .bg-video, .bg-fallback {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -3;
+  }
+  .bg-fallback {
+    background: #060609 url('assets/melody-poster.jpg') center/cover no-repeat;
+    z-index: -4;
+  }
+  .bg-video { transition: opacity 1.1s ease; }
+  /* darkening + brand tint overlay so text always reads */
+  .bg-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background:
+      radial-gradient(120% 90% at 50% 55%, transparent 0%, rgba(6, 6, 12, 0.35) 45%, rgba(6, 6, 12, 0.82) 100%),
+      linear-gradient(180deg, rgba(6, 6, 12, 0.72) 0%, rgba(6, 6, 12, 0.28) 30%, rgba(6, 6, 12, 0.55) 70%, rgba(6, 6, 12, 0.92) 100%);
+  }
+  .bg-grain {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ---------- layout ---------- */
+  .wrap {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: clamp(20px, 4vw, 40px);
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .brand img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px var(--line), 0 8px 30px rgba(139, 92, 246, 0.35);
+  }
+  .brand .name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+  .brand .name b { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  .nav-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(10px);
+  }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #34d399;
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7);
+    animation: ping 2s infinite;
+  }
+  @keyframes ping {
+    0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.55); }
+    70% { box-shadow: 0 0 0 8px rgba(52, 211, 153, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+  }
+
+  /* ---------- hero ---------- */
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: clamp(30px, 6vh, 80px) 0;
+  }
+  .hero { max-width: 860px; width: 100%; }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 15px;
+    border-radius: 999px;
+    border: 1px solid rgba(217, 70, 239, 0.35);
+    background: rgba(217, 70, 239, 0.1);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #f0abfc;
+    margin-bottom: 26px;
+  }
+  .eyebrow .spark { animation: spin 6s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: clamp(38px, 7vw, 76px);
+    line-height: 1.03;
+    letter-spacing: -0.02em;
+    margin-bottom: 22px;
+  }
+  h1 .grad {
+    background: var(--grad);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shine 6s linear infinite;
+  }
+  @keyframes shine { to { background-position: 200% center; } }
+
+  .sub {
+    font-size: clamp(16px, 2.1vw, 20px);
+    line-height: 1.55;
+    color: var(--muted);
+    max-width: 600px;
+    margin: 0 auto 26px;
+  }
+  .sub strong {
+    display: inline-block;
+    margin-top: 10px;
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* equalizer accent */
+  .eq {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 5px;
+    height: 34px;
+    margin: 0 auto 34px;
+  }
+  .eq span {
+    width: 5px;
+    border-radius: 3px;
+    background: var(--grad);
+    animation: bounce 1.1s ease-in-out infinite;
+  }
+  .eq span:nth-child(1){ animation-delay: -1.0s; }
+  .eq span:nth-child(2){ animation-delay: -0.7s; }
+  .eq span:nth-child(3){ animation-delay: -0.4s; }
+  .eq span:nth-child(4){ animation-delay: -0.9s; }
+  .eq span:nth-child(5){ animation-delay: -0.2s; }
+  .eq span:nth-child(6){ animation-delay: -0.6s; }
+  .eq span:nth-child(7){ animation-delay: -0.35s; }
+  @keyframes bounce {
+    0%, 100% { height: 8px; opacity: 0.55; }
+    50% { height: 32px; opacity: 1; }
+  }
+
+  /* ---------- waitlist form ---------- */
+  form {
+    display: flex;
+    gap: 10px;
+    max-width: 480px;
+    margin: 0 auto 18px;
+    padding: 7px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(14px);
+    transition: border-color 0.25s, box-shadow 0.25s;
+  }
+  form:focus-within {
+    border-color: rgba(217, 70, 239, 0.55);
+    box-shadow: 0 0 0 4px rgba(217, 70, 239, 0.12);
+  }
+  form input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-size: 15px;
+    padding: 0 14px;
+    font-family: inherit;
+  }
+  form input::placeholder { color: rgba(245, 243, 255, 0.4); }
+  form button {
+    flex-shrink: 0;
+    border: none;
+    cursor: pointer;
+    padding: 13px 22px;
+    border-radius: 11px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: #fff;
+    background: var(--grad);
+    background-size: 150% auto;
+    transition: transform 0.15s, box-shadow 0.25s, background-position 0.4s;
+    box-shadow: 0 10px 30px rgba(217, 70, 239, 0.3);
+  }
+  form button:hover { transform: translateY(-1px); background-position: right center; box-shadow: 0 14px 36px rgba(217, 70, 239, 0.45); }
+  form button:active { transform: translateY(0); }
+
+  .form-note {
+    font-size: 13px;
+    color: rgba(245, 243, 255, 0.42);
+    margin-bottom: 40px;
+  }
+  .success {
+    display: none;
+    max-width: 480px;
+    margin: 0 auto 40px;
+    padding: 16px 20px;
+    border-radius: 16px;
+    border: 1px solid rgba(52, 211, 153, 0.4);
+    background: rgba(52, 211, 153, 0.1);
+    color: #a7f3d0;
+    font-weight: 500;
+    animation: fadeUp 0.5s ease both;
+  }
+  .success.show { display: block; }
+
+  /* feature chips */
+  .features {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 15px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.03);
+    font-size: 13.5px;
+    font-weight: 500;
+    color: rgba(245, 243, 255, 0.78);
+  }
+  .chip svg { width: 15px; height: 15px; }
+
+  /* ---------- footer ---------- */
+  footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    font-size: 13px;
+    color: rgba(245, 243, 255, 0.45);
+  }
+  .socials { display: flex; gap: 8px; }
+  .socials a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    color: rgba(245, 243, 255, 0.7);
+    transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.2s;
+  }
+  .socials a:hover { color: #fff; border-color: rgba(217, 70, 239, 0.5); background: rgba(217, 70, 239, 0.12); transform: translateY(-2px); }
+  .socials svg { width: 17px; height: 17px; }
+
+  /* entrance animation */
+  .fade { opacity: 0; transform: translateY(18px); animation: fadeUp 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) forwards; }
+  .d1 { animation-delay: 0.05s; }
+  .d2 { animation-delay: 0.18s; }
+  .d3 { animation-delay: 0.31s; }
+  .d4 { animation-delay: 0.44s; }
+  .d5 { animation-delay: 0.57s; }
+  .d6 { animation-delay: 0.70s; }
+  @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 560px) {
+    form { flex-direction: column; padding: 10px; }
+    form input { padding: 12px 14px; }
+    footer { justify-content: center; text-align: center; }
+    .hide-sm { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fade, .eq span, .eyebrow .spark, h1 .grad, .dot { animation: none !important; opacity: 1 !important; transform: none !important; }
+    .bg-video { display: none; }
+  }
+</style>
+</head>
+<body>
+  <!-- background: two stacked videos crossfade for a seamless loop -->
+  <div class="bg-fallback" aria-hidden="true"></div>
+  <video class="bg-video" id="v1" autoplay muted playsinline preload="auto" poster="assets/melody-poster.jpg" aria-hidden="true" style="opacity:1">
+    <source src="assets/melody-bg.mp4" type="video/mp4" />
+  </video>
+  <video class="bg-video" id="v2" muted playsinline preload="auto" aria-hidden="true" style="opacity:0">
+    <source src="assets/melody-bg.mp4" type="video/mp4" />
+  </video>
+  <div class="bg-overlay" aria-hidden="true"></div>
+  <div class="bg-grain" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <!-- top bar -->
+    <header class="fade d1">
+      <div class="brand">
+        <img src="assets/melody-avatar.png" alt="Melody AI" />
+        <span class="name">MELODY <b>AI</b></span>
+      </div>
+      <span class="nav-pill"><span class="dot"></span> Launching soon</span>
+    </header>
+
+    <!-- hero -->
+    <main>
+      <div class="hero">
+        <span class="eyebrow fade d2"><span class="spark">✦</span> Coming Soon</span>
+
+        <h1 class="fade d2">The smarter way to<br /><span class="grad">grow your music.</span></h1>
+
+        <div class="eq fade d3" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+
+        <p class="sub fade d3">
+          Melody AI reads the signals behind every stream, follow, and sale — then makes the
+          right move for you. More fans, more reach, more revenue, without the guesswork.
+          <br class="hide-sm" /><strong>You make the music. Melody grows it.</strong>
+        </p>
+
+        <!-- waitlist -->
+        <form id="waitlist" class="fade d4" novalidate>
+          <input type="email" id="email" name="email" placeholder="you@artist.com" autocomplete="email" required aria-label="Email address" />
+          <button type="submit">Get early access</button>
+        </form>
+        <p class="form-note fade d4">Join the waitlist — be first in line when the beta opens. No spam, ever.</p>
+
+        <div class="success" id="success">🎉 You’re on the list! We’ll email <b id="who">you</b> the moment early access opens.</div>
+      </div>
+    </main>
+
+    <!-- footer -->
+    <footer class="fade d6">
+      <span>© 2026 Melody AI · Built for artists, labels &amp; managers</span>
+    </footer>
+  </div>
+
+  <script>
+    /* Seamless background loop: crossfade between two copies of the clip so
+       the loop seam is hidden behind a 1.1s opacity blend. */
+    (function () {
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce) return;
+      var vids = [document.getElementById('v1'), document.getElementById('v2')];
+      if (!vids[0] || !vids[1]) return;
+      var XF = 1.1;      // crossfade seconds (matches CSS transition)
+      var active = 0;
+      vids.forEach(function (v) { v.muted = true; v.playsInline = true; });
+      var p = vids[0].play(); if (p && p.catch) p.catch(function () {});
+
+      function step() {
+        var cur = vids[active];
+        if (cur.duration && !isNaN(cur.duration) && cur.currentTime >= cur.duration - XF) {
+          var nxt = vids[1 - active];
+          try { nxt.currentTime = 0; } catch (e) {}
+          var pr = nxt.play(); if (pr && pr.catch) pr.catch(function () {});
+          nxt.style.opacity = '1';
+          cur.style.opacity = '0';
+          var old = cur;
+          active = 1 - active;
+          window.setTimeout(function () { try { old.pause(); } catch (e) {} }, XF * 1000 + 80);
+        }
+        requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    })();
+
+    (function () {
+      /* ────────────────────────────────────────────────────────────────
+         WAITLIST → GOOGLE SHEETS
+         Paste your Google Apps Script Web App URL below (ends in /exec).
+         See google-apps-script.gs + README for the 4-step deploy.
+         While this is empty, signups are just kept in localStorage.
+         ──────────────────────────────────────────────────────────────── */
+      var WAITLIST_ENDPOINT = '';
+
+      var form = document.getElementById('waitlist');
+      var success = document.getElementById('success');
+      var emailInput = document.getElementById('email');
+      var who = document.getElementById('who');
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var email = (emailInput.value || '').trim();
+        var valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        if (!valid) {
+          emailInput.focus();
+          form.style.borderColor = 'rgba(244,63,94,0.6)';
+          setTimeout(function () { form.style.borderColor = ''; }, 1200);
+          return;
+        }
+
+        // Send to the Google Sheet (fire-and-forget; no-cors avoids a CORS preflight).
+        if (WAITLIST_ENDPOINT) {
+          try {
+            fetch(WAITLIST_ENDPOINT, {
+              method: 'POST',
+              mode: 'no-cors',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+              body: new URLSearchParams({
+                email: email,
+                source: 'coming-soon',
+                page: location.href
+              }).toString()
+            });
+          } catch (err) {}
+        }
+
+        // Local backup so nothing is ever lost even before the endpoint is set.
+        try {
+          var list = JSON.parse(localStorage.getItem('melody_waitlist') || '[]');
+          if (list.indexOf(email) === -1) list.push(email);
+          localStorage.setItem('melody_waitlist', JSON.stringify(list));
+        } catch (err) {}
+
+        who.textContent = email;
+        form.style.display = 'none';
+        document.querySelector('.form-note').style.display = 'none';
+        success.classList.add('show');
+      });
+    })();
+  </script>
+</body>
+</html>
