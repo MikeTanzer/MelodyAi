@@ -555,7 +555,7 @@
       <div class="hero">
         <span class="eyebrow fade d2"><span class="spark">✦</span> Coming Soon</span>
 
-        <h1 class="fade d2">The smarter way to<br /><span class="grad">grow your <span class="rotator" id="rotator">music</span>.</span></h1>
+        <h1 class="fade d2">The smarter way to<br /><span class="grad">grow <span id="yourWord">your </span><span class="rotator" id="rotator">music</span>.</span></h1>
 
         <div class="eq fade d3" aria-hidden="true">
           <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
@@ -745,12 +745,15 @@
       var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (reduce) return; // keep the static word for reduced-motion visitors
       var WORDS = ['music', 'fanbase', 'engagement', 'sales'];
+      var yourEl = document.getElementById('yourWord');
       var i = 0;
       window.setInterval(function () {
         el.classList.add('swap');                    // fade out
         window.setTimeout(function () {
           i = (i + 1) % WORDS.length;
           el.textContent = WORDS[i];
+          // "grow engagement." — drop "your" so it fits on one line on mobile
+          if (yourEl) yourEl.style.display = WORDS[i] === 'engagement' ? 'none' : '';
           el.classList.remove('swap');               // fade back in
         }, 320);
       }, 3200);
