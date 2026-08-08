@@ -679,6 +679,31 @@
       start(); // try immediately; falls back to a gesture if the browser blocks it
     })();
 
+    /* Fader focus fix: after a mouse click the slider keeps focus, and
+       :focus-within would pin the popover open forever. Blur it once the
+       pointer leaves — but keep it open for keyboard (arrow-key) users. */
+    (function () {
+      var ctrl = document.getElementById('soundCtrl');
+      var slider = document.getElementById('vol');
+      if (!ctrl || !slider) return;
+      var keyboard = false;
+      slider.addEventListener('keydown', function () { keyboard = true; });
+      slider.addEventListener('pointerdown', function () { keyboard = false; });
+      function maybeBlur() {
+        if (!keyboard && ctrl.contains(document.activeElement)) document.activeElement.blur();
+      }
+      ctrl.addEventListener('mouseleave', function (e) {
+        if (e.buttons) return; // mid-drag — wait for pointerup
+        maybeBlur();
+      });
+      document.addEventListener('pointerup', function (e) {
+        if (!ctrl.contains(document.activeElement)) return;
+        var r = ctrl.getBoundingClientRect();
+        var inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+        if (!inside) maybeBlur(); // drag released outside the control
+      });
+    })();
+
     /* Courtesy: pause the music when the tab is hidden, resume on return. */
     (function () {
       var audio = document.getElementById('theme');
