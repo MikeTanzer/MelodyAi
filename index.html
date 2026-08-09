@@ -516,9 +516,14 @@
     /* center the text above the sound control instead of beside it */
     footer { justify-content: center; text-align: center; padding-right: 0; padding-bottom: 72px; }
     .hide-sm { display: none; }
-    /* Reserve the tallest wrap ("engagement" takes one line more than "music"),
-       so swapping words doesn't shove the rest of the page up and down. */
-    h1 { min-height: 4.15em; }
+    /* Drop "your" on small screens so the longest word ("engagement") fits
+       without wrapping. Done in CSS, not JS — a static per-viewport rule can't
+       reflow mid-swap the way the old scripted toggle did. */
+    .your-sm { display: none; }
+    /* Scale the headline down on narrow phones so even the longest word
+       ("engagement") stays on one line — the global clamp floors at 38px,
+       which overflows at 320px. Reserve the height so swaps don't jump. */
+    h1 { font-size: clamp(29px, 9.2vw, 38px); min-height: 3.15em; }
   }
 
   /* keyboard focus */
@@ -584,7 +589,7 @@
       <div class="hero">
         <span class="eyebrow fade d2"><span class="spark">✦</span> Coming Soon</span>
 
-        <h1 class="fade d2">The smarter way to<br /><span class="grad">grow your <span class="rotator" id="rotator">music.</span></span></h1>
+        <h1 class="fade d2">The smarter way to<br /><span class="grad">grow <span class="your-sm">your </span><span class="rotator" id="rotator">music.</span></span></h1>
 
         <div class="eq fade d3" aria-hidden="true">
           <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
