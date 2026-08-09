@@ -9,10 +9,15 @@ The "coming soon" landing page for **Melody AI**, the AI growth engine for artis
 A single, self-contained static landing page:
 
 - **`index.html`** — the whole page (inline CSS + JS, no build step)
+- **`site.webmanifest`** — PWA manifest (Android installability, app metadata)
+- **`favicon.ico`** — multi-resolution icon for Safari, legacy browsers, and root `/favicon.ico` probing
 - **`assets/`**
   - `melody-bg.mp4` — looping cinematic background video (violet/fuchsia audio-waveform visualizer, generated with Higgsfield AI)
   - `melody-poster.jpg` — first-frame poster shown while the video loads / on reduced-motion
-  - `melody-avatar.png` — the Melody brand mark
+  - `melody-avatar.png` — the Melody brand mark (512×512)
+  - `favicon-16.png`, `favicon-32.png`, `favicon-48.png` — browser tab icons for Chrome, Firefox, Brave, Edge
+  - `apple-touch-icon.png` — 180×180 iOS home screen icon
+  - `icon-192.png`, `icon-512.png` — Android app icons
 
 ## Features
 
