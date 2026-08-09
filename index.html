@@ -73,8 +73,15 @@
   .bg-fallback {
     background: #060609 url('assets/melody-poster.jpg') center/cover no-repeat;
     z-index: -4;
+    filter: blur(9px) saturate(1.05);
+    transform: scale(1.06);
   }
-  .bg-video { transition: opacity 1.1s ease; }
+  .bg-video {
+    transition: opacity 1.1s ease;
+    /* soften the visualizer's crisp tick bars so they never compete with the text */
+    filter: blur(9px) saturate(1.05);
+    transform: scale(1.06); /* hide the blurred edge fringe */
+  }
   /* darkening + brand tint overlay so text always reads */
   .bg-overlay {
     position: fixed;
@@ -164,7 +171,17 @@
     text-align: center;
     padding: clamp(30px, 6vh, 80px) 0;
   }
-  .hero { max-width: 860px; width: 100%; }
+  .hero { max-width: 860px; width: 100%; position: relative; }
+  /* feathered darkening behind the text so the video's bright
+     equalizer ticks never show through the headline */
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: -18% -34%;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(ellipse 68% 58% at 50% 43%, rgba(6, 6, 12, 0.72) 0%, rgba(6, 6, 12, 0.46) 46%, rgba(6, 6, 12, 0.18) 62%, transparent 76%);
+  }
 
   .eyebrow {
     display: inline-flex;
