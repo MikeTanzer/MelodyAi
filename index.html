@@ -52,7 +52,9 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  html { scroll-behavior: smooth; }
+  /* `clip` (not `hidden`) — it stops sideways scrolling without turning html
+     into a scroll container, which would break smooth scrolling + scroll-snap */
+  html { scroll-behavior: smooth; overflow-x: clip; }
 
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -174,11 +176,16 @@
   .hero::before {
     content: '';
     position: absolute;
-    inset: -18% -34%;
+    /* no horizontal bleed — a negative left/right inset here widens the
+       document and lets the page scroll sideways on mobile */
+    inset: -24% 0;
     z-index: -1;
     pointer-events: none;
-    background: radial-gradient(ellipse 62% 48% at 50% 38%, rgba(5, 5, 10, 0.94) 0%, rgba(5, 5, 10, 0.88) 34%, rgba(5, 5, 10, 0.6) 54%, rgba(5, 5, 10, 0.24) 70%, transparent 84%);
-    /* blur ONLY this shade's edge, so it melts into the sharp video behind it */
+    /* >100% horizontal radius: fully covers the headline band edge-to-edge
+       (clipped by the box, so it costs no document width) while still
+       feathering away vertically, keeping the waves visible above + below */
+    background: radial-gradient(ellipse 150% 44% at 50% 39%, rgba(5, 5, 10, 0.96) 0%, rgba(5, 5, 10, 0.93) 38%, rgba(5, 5, 10, 0.66) 60%, rgba(5, 5, 10, 0.26) 78%, transparent 92%);
+    /* blur ONLY this shade, so the video behind it stays sharp */
     filter: blur(26px);
   }
 
