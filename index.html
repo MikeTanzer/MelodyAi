@@ -177,7 +177,9 @@
     inset: -18% -34%;
     z-index: -1;
     pointer-events: none;
-    background: radial-gradient(ellipse 68% 58% at 50% 43%, rgba(6, 6, 12, 0.72) 0%, rgba(6, 6, 12, 0.46) 46%, rgba(6, 6, 12, 0.18) 62%, transparent 76%);
+    background: radial-gradient(ellipse 62% 48% at 50% 38%, rgba(5, 5, 10, 0.94) 0%, rgba(5, 5, 10, 0.88) 34%, rgba(5, 5, 10, 0.6) 54%, rgba(5, 5, 10, 0.24) 70%, transparent 84%);
+    /* blur ONLY this shade's edge, so it melts into the sharp video behind it */
+    filter: blur(26px);
   }
 
   .eyebrow {
@@ -569,7 +571,7 @@
       <div class="hero">
         <span class="eyebrow fade d2"><span class="spark">✦</span> Coming Soon</span>
 
-        <h1 class="fade d2">The smarter way to<br /><span class="grad">grow <span id="yourWord">your </span><span class="rotator" id="rotator">music</span>.</span></h1>
+        <h1 class="fade d2">The smarter way to<br /><span class="grad">grow <span id="yourWord">your </span><span class="rotator" id="rotator">music.</span></span></h1>
 
         <div class="eq fade d3" aria-hidden="true">
           <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
@@ -765,7 +767,7 @@
         el.classList.add('swap');                    // fade out
         window.setTimeout(function () {
           i = (i + 1) % WORDS.length;
-          el.textContent = WORDS[i];
+          el.textContent = WORDS[i] + '.';             // period rides along, never orphaned
           // "grow engagement." — drop "your" so it fits on one line on mobile
           if (yourEl) yourEl.style.display = WORDS[i] === 'engagement' ? 'none' : '';
           el.classList.remove('swap');               // fade back in
