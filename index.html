@@ -187,9 +187,12 @@
        solid plateau out to 34% of the radius, feathering only below/above so
        the waves stay visible around the hero.
        >100% horizontal radius covers edge-to-edge without widening the box. */
-    background: radial-gradient(ellipse 150% 34% at 50% 32%, rgba(5, 5, 10, 1) 0%, rgba(5, 5, 10, 1) 34%, rgba(5, 5, 10, 0.72) 56%, rgba(5, 5, 10, 0.3) 76%, transparent 100%);
-    /* blur ONLY this shade, so the video behind it stays sharp */
-    filter: blur(26px);
+    background: radial-gradient(ellipse 150% 34% at 50% 32%, rgba(5, 5, 10, 1) 0%, rgba(5, 5, 10, 1) 38%, rgba(5, 5, 10, 0.95) 46%, rgba(5, 5, 10, 0.84) 54%, rgba(5, 5, 10, 0.66) 62%, rgba(5, 5, 10, 0.46) 71%, rgba(5, 5, 10, 0.27) 80%, rgba(5, 5, 10, 0.12) 89%, rgba(5, 5, 10, 0.03) 95%, transparent 100%);
+    /* NO filter: blur() here. Blur is GPU-rasterized and Brave's fingerprinting
+       protection perturbs filter output, which dropped the plateau just under
+       opaque and let the brightest bar tips read through as pink ticks under
+       the glyphs — Brave only. The extra gradient stops above give the same
+       soft falloff deterministically, with no filter involved. */
   }
 
   .eyebrow {
@@ -212,6 +215,10 @@
   @keyframes spin { to { transform: rotate(360deg); } }
 
   h1 {
+    /* Second line of defence, independent of the shade: an opaque halo hugging
+       each glyph. Plainly rasterized (no filter, no gradient interpolation), so
+       it holds up even where a browser renders the shade a hair under opaque. */
+    text-shadow: 0 0 14px rgba(5, 5, 10, 0.98), 0 0 28px rgba(5, 5, 10, 0.9);
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 700;
     font-size: clamp(38px, 7vw, 76px);
@@ -226,6 +233,10 @@
     background-clip: text;
     color: transparent;
     animation: shine 6s linear infinite;
+    /* The glyph halo must NOT apply here: with background-clip:text the shadow
+       shows through the transparent fill and mutes the gradient. The shade
+       alone covers this line. */
+    text-shadow: none;
   }
   @keyframes shine { to { background-position: 200% center; } }
 
