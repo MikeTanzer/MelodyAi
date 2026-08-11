@@ -175,43 +175,22 @@
     padding: clamp(30px, 6vh, 80px) 0;
   }
   .hero { max-width: 860px; width: 100%; position: relative; }
-  /* Darkening behind the headline so the video's bright equalizer ticks never
-     show through it.
-
-     Anchored to the H1, not the hero. Sizing it off the hero was the actual
-     bug behind the "underscores under The": the shade's geometry was a % of
-     the HERO's height, so when the longest word ("engagement") wrapped to an
-     extra line the hero grew, the shade slid, and the bars were briefly
-     uncovered under the headline — then hid again on the next word. That is
-     why it only ever appeared on "engagement", and only in browsers whose text
-     metrics wrap there (Brave measures differently when Shields blocks the
-     webfont). Tied to the H1, the shade grows with the headline and cannot
-     drift, whatever the word or font. */
   h1 { position: relative; }
-  h1::before {
-    content: '';
-    position: absolute;
-    /* generous vertical feathering above/below the headline */
-    top: -60%;
-    bottom: -60%;
-    /* Full viewport width so the left/right edges land at the window edge
-       rather than cutting a visible rectangle across the hero. left:50% +
-       translateX, not a negative inset, which would widen the document and
-       bring back sideways scrolling on mobile. */
-    left: 50%;
-    width: 100vw;
-    transform: translateX(-50%);
-    z-index: -1;
-    pointer-events: none;
-    /* Kept gentle on purpose. A near-opaque core here reads as a black bar
-       across the hero however wide the feather is — the eye picks up the
-       luminance plateau, not just hard edges. The tick brightness is dealt
-       with at source by the page overlay above (which has no edges to show),
-       and right at the letters by the glyph halos below. */
-    background: radial-gradient(ellipse 112% 64% at 50% 50%, rgba(5, 5, 10, 0.6) 0%, rgba(5, 5, 10, 0.5) 34%, rgba(5, 5, 10, 0.34) 54%, rgba(5, 5, 10, 0.18) 70%, rgba(5, 5, 10, 0.06) 84%, transparent 100%);
-    /* No filter: blur() — blur is GPU-rasterized and can differ per browser.
-       The extra gradient stops above give the same soft falloff, deterministically. */
-  }
+
+  /* NO darkening panel behind the headline — deliberately.
+
+     Every version of one, from a near-opaque plateau down to a 0.6 vignette,
+     read as a black horizontal bar across the hero. That is inherent, not a
+     tuning problem: any localized layer creates a region of different
+     luminance, and the eye finds that plateau however wide the feather is.
+
+     The video's bright equalizer ticks are handled without a panel:
+       1. .bg-overlay dims peak tick brightness across the WHOLE page. It is a
+          full-page gradient with no edges, so it cannot read as a band.
+       2. The stacked text-shadows on h1 (and drop-shadows on .grad) darken
+          only around the glyph shapes, which is where ticks actually collided
+          with the letters.
+     Neither creates a rectangle, so there is nothing to see. */
 
   .eyebrow {
     display: inline-flex;
@@ -238,10 +217,13 @@
        the glyph edge, then fall away, so the darkening follows the text shape
        instead of painting a visible bar across the hero. */
     text-shadow:
-      0 0 5px rgba(5, 5, 10, 1),
-      0 0 12px rgba(5, 5, 10, 0.98),
-      0 0 26px rgba(5, 5, 10, 0.92),
-      0 0 52px rgba(5, 5, 10, 0.72);
+      0 0 4px rgba(5, 5, 10, 1),
+      0 0 9px rgba(5, 5, 10, 1),
+      0 0 18px rgba(5, 5, 10, 1),
+      0 0 32px rgba(5, 5, 10, 0.98),
+      0 0 55px rgba(5, 5, 10, 0.92),
+      0 0 90px rgba(5, 5, 10, 0.8),
+      0 0 140px rgba(5, 5, 10, 0.6);
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 700;
     font-size: clamp(38px, 7vw, 76px);
@@ -262,9 +244,11 @@
        the gradient's colour untouched. */
     text-shadow: none;
     filter:
-      drop-shadow(0 0 6px rgba(5, 5, 10, 0.98))
-      drop-shadow(0 0 16px rgba(5, 5, 10, 0.9))
-      drop-shadow(0 0 34px rgba(5, 5, 10, 0.7));
+      drop-shadow(0 0 5px rgba(5, 5, 10, 1))
+      drop-shadow(0 0 12px rgba(5, 5, 10, 1))
+      drop-shadow(0 0 26px rgba(5, 5, 10, 0.96))
+      drop-shadow(0 0 55px rgba(5, 5, 10, 0.85))
+      drop-shadow(0 0 100px rgba(5, 5, 10, 0.6));
   }
   @keyframes shine { to { background-position: 200% center; } }
 
