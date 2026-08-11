@@ -87,7 +87,11 @@
     inset: 0;
     z-index: -2;
     background:
-      radial-gradient(120% 90% at 50% 55%, transparent 0%, rgba(6, 6, 12, 0.35) 45%, rgba(6, 6, 12, 0.82) 100%),
+      /* Not transparent at the centre. This is a full-page gradient with no
+         edges, so raising it dims the video's peak tick brightness everywhere
+         without creating a band — which is what a local opaque patch behind
+         the headline always ends up looking like. */
+      radial-gradient(120% 90% at 50% 55%, rgba(6, 6, 12, 0.42) 0%, rgba(6, 6, 12, 0.55) 45%, rgba(6, 6, 12, 0.88) 100%),
       linear-gradient(180deg, rgba(6, 6, 12, 0.72) 0%, rgba(6, 6, 12, 0.28) 30%, rgba(6, 6, 12, 0.55) 70%, rgba(6, 6, 12, 0.92) 100%);
   }
   .bg-grain {
@@ -199,20 +203,12 @@
     transform: translateX(-50%);
     z-index: -1;
     pointer-events: none;
-    /* NOT gentle any more — that was the second incarnation of this bug.
-       The page overlay is deliberately transparent at the hero's centre, so
-       this ellipse is the only thing between the video and the headline. At
-       a 0.62 core, a full-brightness equalizer tick still shows through at
-       ~38%, and the two looping videos crossfade once per cycle, swapping
-       which ticks sit where — so dashes appeared under "The", faded, and
-       came back on the next loop. The glyph halos can't help in the gap
-       BETWEEN the lines, where there are no glyphs.
-
-       A near-opaque core wins against any tick brightness, deterministically.
-       The old fear — "an opaque plateau reads as a black bar" — was about
-       hard edges: keep the wide radial feather and the video is simply
-       darker there, with no visible seam against rgba(5,5,10) footage. */
-    background: radial-gradient(ellipse 110% 62% at 50% 50%, rgba(5, 5, 10, 0.94) 0%, rgba(5, 5, 10, 0.9) 34%, rgba(5, 5, 10, 0.74) 54%, rgba(5, 5, 10, 0.46) 70%, rgba(5, 5, 10, 0.18) 84%, transparent 100%);
+    /* Kept gentle on purpose. A near-opaque core here reads as a black bar
+       across the hero however wide the feather is — the eye picks up the
+       luminance plateau, not just hard edges. The tick brightness is dealt
+       with at source by the page overlay above (which has no edges to show),
+       and right at the letters by the glyph halos below. */
+    background: radial-gradient(ellipse 112% 64% at 50% 50%, rgba(5, 5, 10, 0.6) 0%, rgba(5, 5, 10, 0.5) 34%, rgba(5, 5, 10, 0.34) 54%, rgba(5, 5, 10, 0.18) 70%, rgba(5, 5, 10, 0.06) 84%, transparent 100%);
     /* No filter: blur() — blur is GPU-rasterized and can differ per browser.
        The extra gradient stops above give the same soft falloff, deterministically. */
   }
