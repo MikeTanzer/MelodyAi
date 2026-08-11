@@ -216,14 +216,15 @@
        off the letters. Stacked shadows compound to effectively opaque right at
        the glyph edge, then fall away, so the darkening follows the text shape
        instead of painting a visible bar across the hero. */
+    /* Opaque right at the glyph, fading out by ~50px. Deliberately not larger:
+       very wide shadows inflate the paint area enough to invite tiled
+       rasterization, which is what produced the sliver artifacts. */
     text-shadow:
       0 0 4px rgba(5, 5, 10, 1),
       0 0 9px rgba(5, 5, 10, 1),
-      0 0 18px rgba(5, 5, 10, 1),
-      0 0 32px rgba(5, 5, 10, 0.98),
-      0 0 55px rgba(5, 5, 10, 0.92),
-      0 0 90px rgba(5, 5, 10, 0.8),
-      0 0 140px rgba(5, 5, 10, 0.6);
+      0 0 17px rgba(5, 5, 10, 1),
+      0 0 30px rgba(5, 5, 10, 0.95),
+      0 0 50px rgba(5, 5, 10, 0.78);
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 700;
     font-size: clamp(38px, 7vw, 76px);
@@ -246,9 +247,8 @@
     filter:
       drop-shadow(0 0 5px rgba(5, 5, 10, 1))
       drop-shadow(0 0 12px rgba(5, 5, 10, 1))
-      drop-shadow(0 0 26px rgba(5, 5, 10, 0.96))
-      drop-shadow(0 0 55px rgba(5, 5, 10, 0.85))
-      drop-shadow(0 0 100px rgba(5, 5, 10, 0.6));
+      drop-shadow(0 0 26px rgba(5, 5, 10, 0.94))
+      drop-shadow(0 0 50px rgba(5, 5, 10, 0.75));
   }
   @keyframes shine { to { background-position: 200% center; } }
 
@@ -525,6 +525,12 @@
 
   /* entrance animation */
   .fade { opacity: 0; transform: translateY(18px); animation: fadeUp 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) forwards; }
+  /* Once the entrance has run the class is stripped in JS. `forwards` would
+     otherwise leave a transform on the element forever, which keeps it on its
+     own composited layer — and a large composited layer carrying big text
+     shadows gets rasterized in tiles, whose seams show up as thin horizontal
+     slivers that reappear on every repaint (i.e. every word swap). */
+  .faded { opacity: 1; transform: none; }
   .d1 { animation-delay: 0.05s; }
   .d2 { animation-delay: 0.18s; }
   .d3 { animation-delay: 0.31s; }
@@ -771,6 +777,22 @@
       document.addEventListener('visibilitychange', function () {
         if (document.hidden) { wasPlaying = !audio.paused; if (wasPlaying) audio.pause(); }
         else if (wasPlaying) { var p = audio.play(); if (p && p.catch) p.catch(function () {}); }
+      });
+    })();
+
+    /* Drop the entrance animation's retained transform once it has played.
+       animation-fill-mode:forwards keeps transform:translateY(0) applied for
+       the life of the page, which pins the element to its own composited
+       layer. Large composited layers carrying text shadows get tile-rasterized,
+       and the tile seams read as thin horizontal slivers under the letters that
+       flicker back on each repaint. Swapping to a plain class removes the
+       transform, so the layer goes away and there are no seams to show. */
+    (function () {
+      document.querySelectorAll('.fade').forEach(function (el) {
+        el.addEventListener('animationend', function () {
+          el.classList.remove('fade', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6');
+          el.classList.add('faded');
+        }, { once: true });
       });
     })();
 
