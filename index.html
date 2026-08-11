@@ -549,10 +549,10 @@
     /* center the text above the sound control instead of beside it */
     footer { justify-content: center; text-align: center; padding-right: 0; padding-bottom: 72px; }
     .hide-sm { display: none; }
-    /* Drop "your" on small screens so the longest word ("engagement") fits
-       without wrapping. Done in CSS, not JS — a static per-viewport rule can't
-       reflow mid-swap the way the old scripted toggle did. */
-    .your-sm { display: none; }
+    /* Small screens keep "your" for every word except the longest one:
+       "grow your music/fanbase/sales." but "grow engagement." — which is the
+       only one that would otherwise wrap. Desktop keeps "your" throughout. */
+    h1.no-your .your-sm { display: none; }
     /* Scale the headline down on narrow phones so even the longest word
        ("engagement") stays on one line — the global clamp floors at 38px,
        which overflows at 320px. Reserve the height so swaps don't jump. */
@@ -798,7 +798,7 @@
       }
       if (q.indexOf('noshade') > -1) {
         var s = document.createElement('style');
-        s.textContent = '.hero::before{display:none!important}';
+        s.textContent = 'h1::before{display:none!important}';
         document.head.appendChild(s);
       }
     })();
@@ -831,12 +831,18 @@
       var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (reduce) return; // keep the static word for reduced-motion visitors
       var WORDS = ['music', 'fanbase', 'engagement', 'sales'];
+      var h1 = el.closest('h1');
       var i = 0;
       window.setInterval(function () {
         el.classList.add('swap');                    // fade out
         window.setTimeout(function () {
           i = (i + 1) % WORDS.length;
           el.textContent = WORDS[i] + '.';             // period rides along, never orphaned
+          // Mobile drops "your" for the longest word only — "grow engagement."
+          // vs "grow your music." The CSS rule is scoped to the small-screen
+          // media query, so desktop keeps "your" throughout. Toggled in the
+          // same frame as the text so the two never disagree.
+          if (h1) h1.classList.toggle('no-your', WORDS[i] === 'engagement');
           el.classList.remove('swap');               // fade back in
         }, 320);
       }, 3200);
