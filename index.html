@@ -199,11 +199,10 @@
     transform: translateX(-50%);
     z-index: -1;
     pointer-events: none;
-    /* The H1 sits in the middle ~45% of this box, so the opaque plateau runs
-       to 52% of the radius and only then feathers. Fully opaque is required:
-       the brightest bars hit luma 207, and even 0.93 leaves a visible pink
-       trace. >100% horizontal radius covers edge to edge. */
-    background: radial-gradient(ellipse 150% 50% at 50% 50%, rgba(5, 5, 10, 1) 0%, rgba(5, 5, 10, 1) 52%, rgba(5, 5, 10, 0.94) 60%, rgba(5, 5, 10, 0.8) 68%, rgba(5, 5, 10, 0.6) 76%, rgba(5, 5, 10, 0.38) 84%, rgba(5, 5, 10, 0.18) 91%, rgba(5, 5, 10, 0.05) 96%, transparent 100%);
+    /* Deliberately gentle. An opaque plateau here reads as a black bar across
+       the hero, so this only sinks the background a little; the per-glyph
+       halos below do the actual work of keeping bars off the letters. */
+    background: radial-gradient(ellipse 110% 62% at 50% 50%, rgba(5, 5, 10, 0.62) 0%, rgba(5, 5, 10, 0.52) 34%, rgba(5, 5, 10, 0.36) 54%, rgba(5, 5, 10, 0.2) 70%, rgba(5, 5, 10, 0.08) 84%, transparent 100%);
     /* No filter: blur() — blur is GPU-rasterized and can differ per browser.
        The extra gradient stops above give the same soft falloff, deterministically. */
   }
@@ -228,10 +227,15 @@
   @keyframes spin { to { transform: rotate(360deg); } }
 
   h1 {
-    /* Second line of defence, independent of the shade: an opaque halo hugging
-       each glyph. Plainly rasterized (no filter, no gradient interpolation), so
-       it holds up even where a browser renders the shade a hair under opaque. */
-    text-shadow: 0 0 14px rgba(5, 5, 10, 0.98), 0 0 28px rgba(5, 5, 10, 0.9);
+    /* This — not a background panel — is what keeps the video's bright ticks
+       off the letters. Stacked shadows compound to effectively opaque right at
+       the glyph edge, then fall away, so the darkening follows the text shape
+       instead of painting a visible bar across the hero. */
+    text-shadow:
+      0 0 5px rgba(5, 5, 10, 1),
+      0 0 12px rgba(5, 5, 10, 0.98),
+      0 0 26px rgba(5, 5, 10, 0.92),
+      0 0 52px rgba(5, 5, 10, 0.72);
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 700;
     font-size: clamp(38px, 7vw, 76px);
@@ -246,10 +250,15 @@
     background-clip: text;
     color: transparent;
     animation: shine 6s linear infinite;
-    /* The glyph halo must NOT apply here: with background-clip:text the shadow
-       shows through the transparent fill and mutes the gradient. The shade
-       alone covers this line. */
+    /* text-shadow can't be used here — with background-clip:text it shows
+       through the transparent fill and mutes the gradient. drop-shadow works
+       on the rendered glyph instead, giving the same dark halo while leaving
+       the gradient's colour untouched. */
     text-shadow: none;
+    filter:
+      drop-shadow(0 0 6px rgba(5, 5, 10, 0.98))
+      drop-shadow(0 0 16px rgba(5, 5, 10, 0.9))
+      drop-shadow(0 0 34px rgba(5, 5, 10, 0.7));
   }
   @keyframes shine { to { background-position: 200% center; } }
 
