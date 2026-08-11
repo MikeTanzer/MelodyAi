@@ -199,10 +199,20 @@
     transform: translateX(-50%);
     z-index: -1;
     pointer-events: none;
-    /* Deliberately gentle. An opaque plateau here reads as a black bar across
-       the hero, so this only sinks the background a little; the per-glyph
-       halos below do the actual work of keeping bars off the letters. */
-    background: radial-gradient(ellipse 110% 62% at 50% 50%, rgba(5, 5, 10, 0.62) 0%, rgba(5, 5, 10, 0.52) 34%, rgba(5, 5, 10, 0.36) 54%, rgba(5, 5, 10, 0.2) 70%, rgba(5, 5, 10, 0.08) 84%, transparent 100%);
+    /* NOT gentle any more — that was the second incarnation of this bug.
+       The page overlay is deliberately transparent at the hero's centre, so
+       this ellipse is the only thing between the video and the headline. At
+       a 0.62 core, a full-brightness equalizer tick still shows through at
+       ~38%, and the two looping videos crossfade once per cycle, swapping
+       which ticks sit where — so dashes appeared under "The", faded, and
+       came back on the next loop. The glyph halos can't help in the gap
+       BETWEEN the lines, where there are no glyphs.
+
+       A near-opaque core wins against any tick brightness, deterministically.
+       The old fear — "an opaque plateau reads as a black bar" — was about
+       hard edges: keep the wide radial feather and the video is simply
+       darker there, with no visible seam against rgba(5,5,10) footage. */
+    background: radial-gradient(ellipse 110% 62% at 50% 50%, rgba(5, 5, 10, 0.94) 0%, rgba(5, 5, 10, 0.9) 34%, rgba(5, 5, 10, 0.74) 54%, rgba(5, 5, 10, 0.46) 70%, rgba(5, 5, 10, 0.18) 84%, transparent 100%);
     /* No filter: blur() — blur is GPU-rasterized and can differ per browser.
        The extra gradient stops above give the same soft falloff, deterministically. */
   }
