@@ -171,28 +171,41 @@
     padding: clamp(30px, 6vh, 80px) 0;
   }
   .hero { max-width: 860px; width: 100%; position: relative; }
-  /* feathered darkening behind the text so the video's bright
-     equalizer ticks never show through the headline */
-  .hero::before {
+  /* Darkening behind the headline so the video's bright equalizer ticks never
+     show through it.
+
+     Anchored to the H1, not the hero. Sizing it off the hero was the actual
+     bug behind the "underscores under The": the shade's geometry was a % of
+     the HERO's height, so when the longest word ("engagement") wrapped to an
+     extra line the hero grew, the shade slid, and the bars were briefly
+     uncovered under the headline — then hid again on the next word. That is
+     why it only ever appeared on "engagement", and only in browsers whose text
+     metrics wrap there (Brave measures differently when Shields blocks the
+     webfont). Tied to the H1, the shade grows with the headline and cannot
+     drift, whatever the word or font. */
+  h1 { position: relative; }
+  h1::before {
     content: '';
     position: absolute;
-    /* no horizontal bleed — a negative left/right inset here widens the
-       document and lets the page scroll sideways on mobile */
-    inset: -24% 0;
+    /* generous vertical feathering above/below the headline */
+    top: -60%;
+    bottom: -60%;
+    /* Full viewport width so the left/right edges land at the window edge
+       rather than cutting a visible rectangle across the hero. left:50% +
+       translateX, not a negative inset, which would widen the document and
+       bring back sideways scrolling on mobile. */
+    left: 50%;
+    width: 100vw;
+    transform: translateX(-50%);
     z-index: -1;
     pointer-events: none;
-    /* The headline occupies ~23-40% of this box. The video's brightest bars hit
-       luma 207, so the shade must be fully opaque across that band — at 0.93
-       they still read through as faint pink ticks under the letters. Hence a
-       solid plateau out to 34% of the radius, feathering only below/above so
-       the waves stay visible around the hero.
-       >100% horizontal radius covers edge-to-edge without widening the box. */
-    background: radial-gradient(ellipse 150% 34% at 50% 32%, rgba(5, 5, 10, 1) 0%, rgba(5, 5, 10, 1) 38%, rgba(5, 5, 10, 0.95) 46%, rgba(5, 5, 10, 0.84) 54%, rgba(5, 5, 10, 0.66) 62%, rgba(5, 5, 10, 0.46) 71%, rgba(5, 5, 10, 0.27) 80%, rgba(5, 5, 10, 0.12) 89%, rgba(5, 5, 10, 0.03) 95%, transparent 100%);
-    /* NO filter: blur() here. Blur is GPU-rasterized and Brave's fingerprinting
-       protection perturbs filter output, which dropped the plateau just under
-       opaque and let the brightest bar tips read through as pink ticks under
-       the glyphs — Brave only. The extra gradient stops above give the same
-       soft falloff deterministically, with no filter involved. */
+    /* The H1 sits in the middle ~45% of this box, so the opaque plateau runs
+       to 52% of the radius and only then feathers. Fully opaque is required:
+       the brightest bars hit luma 207, and even 0.93 leaves a visible pink
+       trace. >100% horizontal radius covers edge to edge. */
+    background: radial-gradient(ellipse 150% 50% at 50% 50%, rgba(5, 5, 10, 1) 0%, rgba(5, 5, 10, 1) 52%, rgba(5, 5, 10, 0.94) 60%, rgba(5, 5, 10, 0.8) 68%, rgba(5, 5, 10, 0.6) 76%, rgba(5, 5, 10, 0.38) 84%, rgba(5, 5, 10, 0.18) 91%, rgba(5, 5, 10, 0.05) 96%, transparent 100%);
+    /* No filter: blur() — blur is GPU-rasterized and can differ per browser.
+       The extra gradient stops above give the same soft falloff, deterministically. */
   }
 
   .eyebrow {
@@ -760,6 +773,25 @@
         if (document.hidden) { wasPlaying = !audio.paused; if (wasPlaying) audio.pause(); }
         else if (wasPlaying) { var p = audio.play(); if (p && p.catch) p.catch(function () {}); }
       });
+    })();
+
+    /* Diagnostic hooks, opt-in via query string — used to isolate a rendering
+       artifact that only reproduces in some browsers.
+         ?novideo   hide the background video/poster entirely
+         ?noshade   hide the darkening layer behind the headline
+       Neither runs unless explicitly requested. */
+    (function () {
+      var q = window.location.search;
+      if (q.indexOf('novideo') > -1) {
+        ['v1', 'v2'].forEach(function (id) { var e = document.getElementById(id); if (e) e.style.display = 'none'; });
+        document.querySelectorAll('.bg-fallback, .bg-overlay, .bg-grain').forEach(function (e) { e.style.display = 'none'; });
+        document.body.style.background = '#05050a';
+      }
+      if (q.indexOf('noshade') > -1) {
+        var s = document.createElement('style');
+        s.textContent = '.hero::before{display:none!important}';
+        document.head.appendChild(s);
+      }
     })();
 
     /* Subtle mouse parallax on the background video (desktop, motion-ok only). */
