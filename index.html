@@ -125,11 +125,71 @@
     align-items: center;
     gap: 12px;
   }
-  .brand img {
+  /* ---------- animated brand mark ----------
+     Three layers, all slow and offset from each other so the loop never reads
+     as a single repeating beat:
+       ::before  a conic gradient ring sweeping around the rim
+       ::after   a glint that travels across the face now and then
+       img       a gentle breathing scale + glow
+     Pauses on hover so it settles under the cursor, and is disabled wholesale
+     under prefers-reduced-motion further down. */
+  .brand .avatar {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    flex: none;
+    border-radius: 50%;
+    isolation: isolate;
+  }
+  .brand .avatar::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    z-index: 0;
+    background: conic-gradient(from 0deg, transparent 0deg, rgba(167, 139, 250, 0.9) 70deg, rgba(217, 70, 239, 0.95) 140deg, transparent 210deg, transparent 360deg);
+    /* ring only: punch out the middle so it never veils the artwork */
+    -webkit-mask: radial-gradient(circle, transparent 0 20px, #000 21px);
+    mask: radial-gradient(circle, transparent 0 20px, #000 21px);
+    animation: brandRing 6s linear infinite;
+    opacity: 0.85;
+  }
+  .brand .avatar img {
+    position: relative;
+    z-index: 1;
+    display: block;
     width: 44px;
     height: 44px;
     border-radius: 50%;
     box-shadow: 0 0 0 1px var(--line), 0 8px 30px rgba(139, 92, 246, 0.35);
+    animation: brandBreathe 4.5s ease-in-out infinite;
+  }
+  .brand .avatar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: 50%;
+    pointer-events: none;
+    background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.5) 48%, rgba(255, 255, 255, 0.08) 55%, transparent 62%);
+    background-size: 260% 260%;
+    animation: brandGlint 7s ease-in-out infinite;
+  }
+  /* let it settle when the cursor is on it */
+  .brand .avatar:hover::before,
+  .brand .avatar:hover::after,
+  .brand .avatar:hover img { animation-play-state: paused; }
+
+  @keyframes brandRing { to { transform: rotate(360deg); } }
+  @keyframes brandBreathe {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 1px var(--line), 0 8px 30px rgba(139, 92, 246, 0.35); }
+    50% { transform: scale(1.06); box-shadow: 0 0 0 1px rgba(217, 70, 239, 0.45), 0 10px 38px rgba(217, 70, 239, 0.55); }
+  }
+  @keyframes brandGlint {
+    0%, 62% { background-position: 140% 0; }
+    82%, 100% { background-position: -60% 0; }
   }
   .brand .name {
     font-family: 'Space Grotesk', sans-serif;
@@ -571,7 +631,10 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .fade, .eq span, .eyebrow .spark, h1 .grad, .dot, .eqbars i { animation: none !important; opacity: 1 !important; transform: none !important; }
+    .fade, .eq span, .eyebrow .spark, h1 .grad, .dot, .eqbars i,
+    .brand .avatar img { animation: none !important; opacity: 1 !important; transform: none !important; }
+    /* drop the brand mark's moving ring and glint entirely */
+    .brand .avatar::before, .brand .avatar::after { display: none !important; }
     .bg-video { display: none; }
   }
 </style>
@@ -607,7 +670,7 @@
     <!-- top bar -->
     <header class="fade d1">
       <div class="brand">
-        <img src="assets/melody-avatar.png" alt="Melody AI" />
+        <span class="avatar"><img src="assets/melody-avatar.png" alt="Melody AI" /></span>
         <span class="name">MELODY <b>AI</b></span>
       </div>
       <span class="nav-pill"><span class="dot"></span> Launching soon</span>
