@@ -629,24 +629,15 @@
     form { padding: 11px; gap: 8px; }
     /* name + phone stack rather than squeezing side by side */
     form .row { flex-direction: column; gap: 8px; }
-    /* A real bottom toolbar: credits pinned bottom-left, player bottom-right,
-       side by side on the same strip. The footer is fixed here (not just
-       padded) so it can't drift up the page and end up above the control. */
+    /* Compact credits at the end of the page — in normal flow, so they only
+       come into view once you reach the bottom. The right padding reserves the
+       strip the floating player sits over, so the two never collide there. */
     footer {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 15;
       justify-content: flex-start;
       align-items: center;
       text-align: left;
       gap: 0;
-      /* right padding reserves the strip the player occupies */
-      padding: 9px 86px 9px 16px;
-      background: rgba(9, 9, 15, 0.82);
-      backdrop-filter: blur(14px);
-      border-top: 1px solid rgba(255, 255, 255, 0.07);
+      padding: 14px 86px 10px 0;
       font-size: 11px;
       line-height: 1.4;
     }
@@ -659,8 +650,6 @@
     /* now the control is just the button, centred in the bar */
     .sound-ctrl { right: 14px; bottom: 2px; }
     .sound-toggle { padding: 7px 11px; }
-    /* keep the fixed bar from covering the end of the page */
-    .wrap { padding-bottom: 68px; }
     .hide-sm { display: none; }
     /* Small screens keep "your" for every word except the longest one:
        "grow your music/fanbase/sales." but "grow engagement." — which is the
