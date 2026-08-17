@@ -354,118 +354,63 @@
   }
 
   /* ---------- waitlist form ---------- */
+  /* ---------- waitlist form ----------
+     Every field is visible: hiding name/phone/message behind a disclosure meant
+     most people never saw them, so the extra detail rarely arrived. */
   form {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 9px;
     max-width: 480px;
-    margin: 0 auto 18px;
-    padding: 7px;
+    margin: 0 auto 16px;
+    padding: 14px;
     border: 1px solid var(--line);
-    border-radius: 16px;
+    border-radius: 18px;
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(14px);
     transition: border-color 0.25s, box-shadow 0.25s;
   }
-  form .row { display: flex; gap: 10px; }
-
-  /* ---------- optional message ---------- */
-  .msg-toggle {
-    align-self: flex-start;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin: 0 0 1px 8px;
-    padding: 3px 2px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 12.5px;
-    font-weight: 500;
-    color: var(--muted);
-    transition: color 0.2s;
-  }
-  .msg-toggle:hover { color: var(--text); }
-  .msg-plus {
-    display: inline-grid;
-    place-items: center;
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    border: 1px solid var(--line);
-    font-size: 12px;
-    line-height: 1;
-    transition: transform 0.28s cubic-bezier(0.2, 0.7, 0.2, 1), border-color 0.2s;
-  }
-  .msg-toggle[aria-expanded="true"] .msg-plus { transform: rotate(45deg); border-color: rgba(217, 70, 239, 0.6); }
-  .msg-opt { opacity: 0.62; }
-
-  /* name + phone + message, revealed together by the toggle */
-  .more-fields { display: flex; flex-direction: column; gap: 10px; }
-  /* an explicit display would otherwise beat the [hidden] attribute's
-     UA display:none, leaving the fields on screen while collapsed */
-  .more-fields[hidden] { display: none; }
-  /* `form input` above strips the border for the email pill; these need their
-     own box, and a class beats a type selector so this wins without !important */
-  form .field {
-    flex: 1;
-    min-width: 0;
-    padding: 11px 13px;
-    border: 1px solid var(--line);
-    border-radius: 11px;
-    background: rgba(0, 0, 0, 0.22);
-    color: var(--text);
-    font-family: inherit;
-    font-size: 14.5px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  form .field::placeholder { color: rgba(245, 243, 255, 0.38); }
-  form .field:focus { border-color: rgba(217, 70, 239, 0.5); }
-
-  form textarea {
-    width: 100%;
-    resize: vertical;
-    min-height: 76px;
-    padding: 11px 13px;
-    border: 1px solid var(--line);
-    border-radius: 11px;
-    background: rgba(0, 0, 0, 0.22);
-    color: var(--text);
-    font-family: inherit;
-    font-size: 14.5px;
-    line-height: 1.5;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  form textarea::placeholder { color: rgba(245, 243, 255, 0.38); }
-  form textarea:focus { border-color: rgba(217, 70, 239, 0.5); }
   form:focus-within {
-    border-color: rgba(217, 70, 239, 0.55);
-    box-shadow: 0 0 0 4px rgba(217, 70, 239, 0.12);
+    border-color: rgba(217, 70, 239, 0.4);
+    box-shadow: 0 0 0 4px rgba(217, 70, 239, 0.1);
   }
-  form input {
+  form .row { display: flex; gap: 9px; }
+
+  form .field,
+  form textarea {
     flex: 1;
     min-width: 0;
-    background: transparent;
-    border: none;
-    outline: none;
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    background: rgba(0, 0, 0, 0.26);
     color: var(--text);
-    font-size: 15px;
-    padding: 0 14px;
     font-family: inherit;
+    font-size: 15px;
+    line-height: 1.45;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
   }
-  form input::placeholder { color: rgba(245, 243, 255, 0.4); }
+  form .field::placeholder,
+  form textarea::placeholder { color: rgba(245, 243, 255, 0.38); }
+  form .field:focus,
+  form textarea:focus {
+    border-color: rgba(217, 70, 239, 0.55);
+    background: rgba(0, 0, 0, 0.34);
+  }
+  form textarea { resize: vertical; min-height: 58px; }
+
   form button {
-    flex-shrink: 0;
+    margin-top: 2px;
+    width: 100%;
     border: none;
     cursor: pointer;
-    padding: 13px 22px;
+    padding: 14px 22px;
     border-radius: 11px;
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 600;
-    font-size: 15px;
+    font-size: 15.5px;
     color: #fff;
     background: var(--grad);
     background-size: 150% auto;
@@ -474,6 +419,12 @@
   }
   form button:hover { transform: translateY(-1px); background-position: right center; box-shadow: 0 14px 36px rgba(217, 70, 239, 0.45); }
   form button:active { transform: translateY(0); }
+
+  .opt-note {
+    margin: 1px 0 0;
+    font-size: 12px;
+    color: rgba(245, 243, 255, 0.4);
+  }
 
   .form-note {
     font-size: 13px;
@@ -675,9 +626,9 @@
   @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 
   @media (max-width: 560px) {
-    form { flex-direction: column; padding: 10px; }
-    form .row { flex-direction: column; }
-    form input { padding: 12px 14px; }
+    form { padding: 11px; gap: 8px; }
+    /* name + phone stack rather than squeezing side by side */
+    form .row { flex-direction: column; gap: 8px; }
     /* center the text above the sound control instead of beside it */
     footer { justify-content: center; text-align: center; padding-right: 0; padding-bottom: 72px; }
     .hide-sm { display: none; }
@@ -771,23 +722,16 @@
 
         <!-- waitlist -->
         <form id="waitlist" class="fade d4" novalidate>
-          <div class="row">
-            <input type="email" id="email" name="email" placeholder="you@artist.com" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" enterkeyhint="go" required aria-label="Email address" />
-            <button type="submit">Get early access</button>
+          <input type="email" class="field" id="email" name="email" placeholder="Email address" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" required aria-label="Email address" />
+          <div class="row two">
+            <input type="text" class="field" id="name" name="name" placeholder="Your name" autocomplete="name" aria-label="Name (optional)" maxlength="120" />
+            <input type="tel" class="field" id="phone" name="phone" placeholder="Phone number" autocomplete="tel" inputmode="tel" aria-label="Phone number (optional)" maxlength="40" />
           </div>
-          <!-- optional, collapsed by default so the hero stays uncluttered -->
-          <button type="button" class="msg-toggle" id="msgToggle" aria-expanded="false" aria-controls="moreFields">
-            <span class="msg-plus" aria-hidden="true">+</span> Add a message <span class="msg-opt">(optional)</span>
-          </button>
-          <div class="more-fields" id="moreFields" hidden>
-            <div class="row two">
-              <input type="text" class="field" id="name" name="name" placeholder="Your name" autocomplete="name" aria-label="Name (optional)" maxlength="120" />
-              <input type="tel" class="field" id="phone" name="phone" placeholder="Phone number" autocomplete="tel" inputmode="tel" aria-label="Phone number (optional)" maxlength="40" />
-            </div>
-            <textarea id="message" name="message" rows="3" maxlength="1000"
-              placeholder="Tell us what you make, what you need, or anything else — optional."
-              aria-label="Message (optional)"></textarea>
-          </div>
+          <textarea id="message" name="message" rows="2" maxlength="1000"
+            placeholder="Tell us what you make, what you need, or anything else"
+            aria-label="Message (optional)"></textarea>
+          <button type="submit">Get early access</button>
+          <p class="opt-note">Only your email is required.</p>
         </form>
         <p class="form-note fade d4">Join the waitlist — be first in line when the beta opens. No spam, ever.</p>
 
@@ -1030,19 +974,6 @@
       var messageInput = document.getElementById('message');
       var nameInput = document.getElementById('name');
       var phoneInput = document.getElementById('phone');
-      var moreFields = document.getElementById('moreFields');
-      var msgToggle = document.getElementById('msgToggle');
-
-      /* Reveal name + phone + message together. Collapsed by default so the
-         hero stays uncluttered for the majority who only leave an email. */
-      if (msgToggle && moreFields) {
-        msgToggle.addEventListener('click', function () {
-          var open = msgToggle.getAttribute('aria-expanded') === 'true';
-          msgToggle.setAttribute('aria-expanded', String(!open));
-          moreFields.hidden = open;
-          if (!open && nameInput) nameInput.focus();
-        });
-      }
       function val(el) { return el ? (el.value || '').trim() : ''; }
 
       form.addEventListener('submit', function (e) {
