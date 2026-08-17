@@ -400,6 +400,30 @@
   }
   .msg-toggle[aria-expanded="true"] .msg-plus { transform: rotate(45deg); border-color: rgba(217, 70, 239, 0.6); }
   .msg-opt { opacity: 0.62; }
+
+  /* name + phone + message, revealed together by the toggle */
+  .more-fields { display: flex; flex-direction: column; gap: 10px; }
+  /* an explicit display would otherwise beat the [hidden] attribute's
+     UA display:none, leaving the fields on screen while collapsed */
+  .more-fields[hidden] { display: none; }
+  /* `form input` above strips the border for the email pill; these need their
+     own box, and a class beats a type selector so this wins without !important */
+  form .field {
+    flex: 1;
+    min-width: 0;
+    padding: 11px 13px;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    background: rgba(0, 0, 0, 0.22);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14.5px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  form .field::placeholder { color: rgba(245, 243, 255, 0.38); }
+  form .field:focus { border-color: rgba(217, 70, 239, 0.5); }
+
   form textarea {
     width: 100%;
     resize: vertical;
@@ -652,6 +676,7 @@
 
   @media (max-width: 560px) {
     form { flex-direction: column; padding: 10px; }
+    form .row { flex-direction: column; }
     form input { padding: 12px 14px; }
     /* center the text above the sound control instead of beside it */
     footer { justify-content: center; text-align: center; padding-right: 0; padding-bottom: 72px; }
@@ -751,12 +776,18 @@
             <button type="submit">Get early access</button>
           </div>
           <!-- optional, collapsed by default so the hero stays uncluttered -->
-          <button type="button" class="msg-toggle" id="msgToggle" aria-expanded="false" aria-controls="message">
+          <button type="button" class="msg-toggle" id="msgToggle" aria-expanded="false" aria-controls="moreFields">
             <span class="msg-plus" aria-hidden="true">+</span> Add a message <span class="msg-opt">(optional)</span>
           </button>
-          <textarea id="message" name="message" rows="3" maxlength="1000" hidden
-            placeholder="Tell us what you make, what you need, or anything else — optional."
-            aria-label="Message (optional)"></textarea>
+          <div class="more-fields" id="moreFields" hidden>
+            <div class="row two">
+              <input type="text" class="field" id="name" name="name" placeholder="Your name" autocomplete="name" aria-label="Name (optional)" maxlength="120" />
+              <input type="tel" class="field" id="phone" name="phone" placeholder="Phone number" autocomplete="tel" inputmode="tel" aria-label="Phone number (optional)" maxlength="40" />
+            </div>
+            <textarea id="message" name="message" rows="3" maxlength="1000"
+              placeholder="Tell us what you make, what you need, or anything else — optional."
+              aria-label="Message (optional)"></textarea>
+          </div>
         </form>
         <p class="form-note fade d4">Join the waitlist — be first in line when the beta opens. No spam, ever.</p>
 
@@ -997,18 +1028,22 @@
       var emailInput = document.getElementById('email');
       var who = document.getElementById('who');
       var messageInput = document.getElementById('message');
+      var nameInput = document.getElementById('name');
+      var phoneInput = document.getElementById('phone');
+      var moreFields = document.getElementById('moreFields');
       var msgToggle = document.getElementById('msgToggle');
 
-      /* Reveal the optional message box. Kept collapsed by default so the hero
-         stays uncluttered for the majority who only want to leave an email. */
-      if (msgToggle && messageInput) {
+      /* Reveal name + phone + message together. Collapsed by default so the
+         hero stays uncluttered for the majority who only leave an email. */
+      if (msgToggle && moreFields) {
         msgToggle.addEventListener('click', function () {
           var open = msgToggle.getAttribute('aria-expanded') === 'true';
           msgToggle.setAttribute('aria-expanded', String(!open));
-          messageInput.hidden = open;
-          if (!open) messageInput.focus();
+          moreFields.hidden = open;
+          if (!open && nameInput) nameInput.focus();
         });
       }
+      function val(el) { return el ? (el.value || '').trim() : ''; }
 
       form.addEventListener('submit', function (e) {
         e.preventDefault();
@@ -1028,12 +1063,14 @@
               method: 'POST',
               mode: 'no-cors',
               headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-              // Sheet columns: C message, D source, E page, F referrer
+              // Sheet columns: C Message, D Name, E Number, F Page
               body: new URLSearchParams({
                 email: email,
-                message: messageInput ? (messageInput.value || '').trim() : '',
-                source: 'coming-soon',
+                message: val(messageInput),
+                name: val(nameInput),
+                phone: val(phoneInput),
                 page: location.href,
+                source: 'coming-soon',
                 referrer: document.referrer || 'direct'
               }).toString()
             });
