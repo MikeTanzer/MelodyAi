@@ -356,6 +356,7 @@
   /* ---------- waitlist form ---------- */
   form {
     display: flex;
+    flex-direction: column;
     gap: 10px;
     max-width: 480px;
     margin: 0 auto 18px;
@@ -366,6 +367,56 @@
     backdrop-filter: blur(14px);
     transition: border-color 0.25s, box-shadow 0.25s;
   }
+  form .row { display: flex; gap: 10px; }
+
+  /* ---------- optional message ---------- */
+  .msg-toggle {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 1px 8px;
+    padding: 3px 2px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--muted);
+    transition: color 0.2s;
+  }
+  .msg-toggle:hover { color: var(--text); }
+  .msg-plus {
+    display: inline-grid;
+    place-items: center;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    font-size: 12px;
+    line-height: 1;
+    transition: transform 0.28s cubic-bezier(0.2, 0.7, 0.2, 1), border-color 0.2s;
+  }
+  .msg-toggle[aria-expanded="true"] .msg-plus { transform: rotate(45deg); border-color: rgba(217, 70, 239, 0.6); }
+  .msg-opt { opacity: 0.62; }
+  form textarea {
+    width: 100%;
+    resize: vertical;
+    min-height: 76px;
+    padding: 11px 13px;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    background: rgba(0, 0, 0, 0.22);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14.5px;
+    line-height: 1.5;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  form textarea::placeholder { color: rgba(245, 243, 255, 0.38); }
+  form textarea:focus { border-color: rgba(217, 70, 239, 0.5); }
   form:focus-within {
     border-color: rgba(217, 70, 239, 0.55);
     box-shadow: 0 0 0 4px rgba(217, 70, 239, 0.12);
@@ -695,8 +746,17 @@
 
         <!-- waitlist -->
         <form id="waitlist" class="fade d4" novalidate>
-          <input type="email" id="email" name="email" placeholder="you@artist.com" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" enterkeyhint="go" required aria-label="Email address" />
-          <button type="submit">Get early access</button>
+          <div class="row">
+            <input type="email" id="email" name="email" placeholder="you@artist.com" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" enterkeyhint="go" required aria-label="Email address" />
+            <button type="submit">Get early access</button>
+          </div>
+          <!-- optional, collapsed by default so the hero stays uncluttered -->
+          <button type="button" class="msg-toggle" id="msgToggle" aria-expanded="false" aria-controls="message">
+            <span class="msg-plus" aria-hidden="true">+</span> Add a message <span class="msg-opt">(optional)</span>
+          </button>
+          <textarea id="message" name="message" rows="3" maxlength="1000" hidden
+            placeholder="Tell us what you make, what you need, or anything else — optional."
+            aria-label="Message (optional)"></textarea>
         </form>
         <p class="form-note fade d4">Join the waitlist — be first in line when the beta opens. No spam, ever.</p>
 
@@ -936,6 +996,19 @@
       var success = document.getElementById('success');
       var emailInput = document.getElementById('email');
       var who = document.getElementById('who');
+      var messageInput = document.getElementById('message');
+      var msgToggle = document.getElementById('msgToggle');
+
+      /* Reveal the optional message box. Kept collapsed by default so the hero
+         stays uncluttered for the majority who only want to leave an email. */
+      if (msgToggle && messageInput) {
+        msgToggle.addEventListener('click', function () {
+          var open = msgToggle.getAttribute('aria-expanded') === 'true';
+          msgToggle.setAttribute('aria-expanded', String(!open));
+          messageInput.hidden = open;
+          if (!open) messageInput.focus();
+        });
+      }
 
       form.addEventListener('submit', function (e) {
         e.preventDefault();
@@ -955,10 +1028,13 @@
               method: 'POST',
               mode: 'no-cors',
               headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+              // Sheet columns: C message, D source, E page, F referrer
               body: new URLSearchParams({
                 email: email,
+                message: messageInput ? (messageInput.value || '').trim() : '',
                 source: 'coming-soon',
-                page: location.href
+                page: location.href,
+                referrer: document.referrer || 'direct'
               }).toString()
             });
           } catch (err) {}
