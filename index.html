@@ -645,20 +645,18 @@
     form { padding: 11px; gap: 8px; }
     /* name + phone stack rather than squeezing side by side */
     form .row { flex-direction: column; gap: 8px; }
-    /* Compact credits at the end of the page — in normal flow, so they only
-       come into view once you reach the bottom. The right padding reserves the
-       strip the floating player sits over, so the two never collide there. */
+    /* Compact credit at the end of the page — in normal flow, so it only comes
+       into view once you reach the bottom. The right padding reserves the strip
+       the floating player sits over, so the two never collide there. */
     footer {
       justify-content: flex-start;
       align-items: center;
       text-align: left;
       gap: 0;
-      padding: 14px 86px 10px 0;
-      font-size: 11px;
+      padding: 12px 86px 10px 0;
+      font-size: 11.5px;
       line-height: 1.4;
     }
-    .foot-sep { display: none; }              /* the '·' only reads inline */
-    .foot-line { display: block; }            /* drops to its own line */
     /* The volume popover only opens on hover, which touch screens don't have —
        yet it still reserved ~118px of layout above the button, pushing the
        control's box up out of the bar. Drop it here; the mute button remains. */
@@ -744,7 +742,7 @@
       <div class="hero">
         <span class="eyebrow fade d2"><span class="spark">✦</span> Coming Soon</span>
 
-        <h1 class="fade d2">The smarter way to<br /><span class="grad">grow <span class="your-sm">your </span><span class="rotator" id="rotator">music.</span></span></h1>
+        <h1 class="fade d2">The smarter way to<br /><span class="grad">grow <span class="your-sm">your </span><span class="rotator" id="rotator">sales.</span></span></h1>
 
         <div class="eq fade d3" aria-hidden="true">
           <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
@@ -753,7 +751,7 @@
         <p class="sub fade d3">
           Every stream, share, and sale is a signal. Melody hears them all<br />and
           knows exactly what to do next.
-          <br class="hide-sm" /><strong>You make the music. Melody helps you promote it.</strong>
+          <br class="hide-sm" /><strong>You make the content. Melody helps you promote it.</strong>
         </p>
 
         <!-- waitlist -->
@@ -777,7 +775,7 @@
 
     <!-- footer -->
     <footer class="fade d6">
-      <span class="foot-text">© 2026 Melody AI<span class="foot-sep"> · </span><span class="foot-line">Built for artists, labels &amp; managers</span></span>
+      <span class="foot-text">© 2026 Melody AI</span>
     </footer>
   </div>
 
@@ -1222,7 +1220,7 @@
       if (!el) return;
       var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (reduce) return; // keep the static word for reduced-motion visitors
-      var WORDS = ['music', 'fanbase', 'engagement', 'sales'];
+      var WORDS = ['sales', 'audience', 'engagement'];
       var h1 = el.closest('h1');
       var i = 0;
       window.setInterval(function () {
